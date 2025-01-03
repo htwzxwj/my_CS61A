@@ -495,14 +495,32 @@ class SlowThrower(ThrowerAnt):
 
     name = 'Slow'
     food_cost = 6
-    # BEGIN Problem EC 1
-    implemented = False   # Change to True to view in the GUI
-    # END Problem EC 1
+    # BEGIN Problem EC
+    turns_to_slow = 5
+    implemented = True   # Change to True to view in the GUI
+    # END Problem EC
+
+    @classmethod
+    def slowed_action(cls, bee):
+        origin_func = bee.origin_func
+        def slow_action(gamestate):
+            print("DEBUG: bee slow turn", bee.slow_turn)
+            bee.slow_turn -= 1
+            if bee.slow_turn >= 0 and gamestate.time % 2 != 0:
+                return
+            elif bee.slow_turn < 0:
+                bee.action = bee.origin_func
+            origin_func(gamestate)
+        return slow_action
 
     def throw_at(self, target):
-        # BEGIN Problem EC 1
+        # BEGIN Problem EC
         "*** YOUR CODE HERE ***"
-        # END Problem EC 1
+        if not hasattr(target, 'slow_turn'):
+            target.origin_func = target.action
+        target.slow_turn = self.turns_to_slow
+        target.action = SlowThrower.slowed_action(target)
+        # END Problem EC
 
 
 class ScaryThrower(ThrowerAnt):

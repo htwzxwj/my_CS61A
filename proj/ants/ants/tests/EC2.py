@@ -10,20 +10,16 @@ test = {
           >>> slow = SlowThrower()
           >>> scary = ScaryThrower()
           >>> SlowThrower.food_cost
-          50ae32be3e31df6c59633df7fdfb3a72
-          # locked
+          6
           >>> ScaryThrower.food_cost
-          50ae32be3e31df6c59633df7fdfb3a72
-          # locked
+          6
           >>> slow.health
-          d89cf7c79d5a479b0f636734143ed5e6
-          # locked
+          1
           >>> scary.health
-          d89cf7c79d5a479b0f636734143ed5e6
-          # locked
+          1
           """,
           'hidden': False,
-          'locked': True,
+          'locked': False,
           'multiline': False
         },
         {
@@ -37,22 +33,19 @@ test = {
           >>> gamestate.time = 1
           >>> bee.action(gamestate)
           >>> bee.place.name
-          46f9851313dc368f747e69f1670450da
-          # locked
+          'tunnel_0_5'
           >>> gamestate.time += 1
           >>> bee.action(gamestate)
           >>> bee.place.name
-          040b6ad98a7360eba8d493c250a9b82e
-          # locked
+          'tunnel_0_4'
           >>> for _ in range(3):
           ...    gamestate.time += 1
           ...    bee.action(gamestate)
           >>> bee.place.name
-          8344c19df8015306b462119efc8419cb
-          # locked
+          'tunnel_0_3'
           """,
           'hidden': False,
-          'locked': True,
+          'locked': False,
           'multiline': False
         },
         {
