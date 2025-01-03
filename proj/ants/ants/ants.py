@@ -246,7 +246,7 @@ class FireAnt(Ant):
     food_cost = 5
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 5
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 5
 
     def __init__(self, health=3):
@@ -262,19 +262,15 @@ class FireAnt(Ant):
         """
         # BEGIN Problem 5
         "*** YOUR CODE HERE ***"
-        reflective_damage = amount
-
-        # 在减少 FireAnt 的生命值之前，对蜜蜂造成反射伤害
-        for bee in list(self.place.bees):  # 使用列表副本避免修改时出错
-            bee.reduce_health(reflective_damage)
-
-        # 调用父类方法减少 FireAnt 的生命值
-        super().reduce_health(amount)
-
-        # 如果 FireAnt 死亡，增加额外伤害
-        if self.health <= 0:
-            for bee in list(self.place.bees):  # 再次遍历蜜蜂
-                bee.reduce_health(self.damage)
+        pos = self.place
+        for i in pos.bees[:]:
+            i.reduce_health(amount)
+        if amount >= self.health:
+            for i in pos.bees[:]:
+                i.reduce_health(self.damage)
+            super().reduce_health(amount)
+        else:
+            super().reduce_health(amount)
         # END Problem 5
 
 # BEGIN Problem 6

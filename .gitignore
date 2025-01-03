@@ -3,3 +3,4 @@
 *.dir
 *.dat
 *.pyc
+**/__pycache__/
