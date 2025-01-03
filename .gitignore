@@ -2,5 +2,5 @@
 *.ok_history
 *.dir
 *.dat
-*.pyc
+*.cpython-312.pyc
 **/__pycache__/
