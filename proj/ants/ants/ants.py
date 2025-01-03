@@ -102,6 +102,8 @@ class Ant(Insect):
     food_cost = 0
     is_container = False
     # ADD CLASS ATTRIBUTES HERE
+    is_waterproof = False
+    is_doubled = False
 
     def __init__(self, health=1):
         super().__init__(health)
@@ -138,12 +140,12 @@ class Ant(Insect):
             place.ant.remove_ant(self)
         Insect.remove_from(self, place)
 
-    def double(self):
-        """Double this ants's damage, if it has not already been doubled."""
-        # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
-        # END Problem 12
-
+    def buff(self):
+            """Double this ants's damage, if it has not already been buffed."""
+            # BEGIN Problem 12
+            "*** YOUR CODE HERE ***"
+            self.damage *= 2
+            # END Problem 12
 
 class HarvesterAnt(Ant):
     """HarvesterAnt produces 1 additional food per turn for the colony."""
@@ -152,6 +154,7 @@ class HarvesterAnt(Ant):
     implemented = True
     # OVERRIDE CLASS ATTRIBUTES HERE
     food_cost = 2
+    is_waterproof = False
     def action(self, gamestate):
         """Produce 1 additional food for the colony.
 
@@ -376,6 +379,19 @@ class BodyguardAnt(ContainerAnt):
 
 # BEGIN Problem 9
 # The TankAnt class
+class TankAnt(ContainerAnt):
+    name = 'Tank'
+    damage = 1
+    food_cost = 6
+    implemented = True
+    def __init__(self, health = 2):
+        super().__init__(health)
+
+    def action(self,gamestate):
+        if self.ant_contained is not None:
+            self.ant_contained.action(gamestate)
+        for i in self.place.bees[:]:
+            i.reduce_health(self.damage)
 # END Problem 9
 
 
@@ -387,22 +403,53 @@ class Water(Place):
         its health to 0."""
         # BEGIN Problem 10
         "*** YOUR CODE HERE ***"
+        super().add_insect(insect)
+        if not insect.is_waterproof:
+            insect.reduce_health(insect.health)
         # END Problem 10
 
 # BEGIN Problem 11
 # The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+    name = 'Scuba'
+    food_cost = 6
+    is_waterproof = True
+    implemented = True
+
+    def __init__(self, health=1):
+        super().__init__(health)
 # END Problem 11
 
 
-class QueenAnt(ThrowerAnt):
-    """QueenAnt boosts the damage of all ants behind her."""
+
+class QueenAnt(ScubaThrower):  # You should change this line
+# END Problem 12
+    """The Queen of the colony. The game is over if a bee enters her place."""
 
     name = 'Queen'
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 12
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 12
+
+    @classmethod
+    def construct(cls, gamestate):
+        """
+        Returns a new instance of the Ant class if it is possible to construct, or
+        returns None otherwise. Remember to call the construct() method of the superclass!
+        """
+        # BEGIN Problem 12
+        "*** YOUR CODE HERE ***"
+        if cls.food_cost > gamestate.food:
+            print('Not enough food remains to place ' + cls.__name__)
+            return
+        if not gamestate.has_queen:
+            gamestate.has_queen = True
+            return super().construct(gamestate)
+        else:
+            return None
+        # END Problem 12
 
     def action(self, gamestate):
         """A queen ant throws a leaf, but also doubles the damage of ants
@@ -410,6 +457,19 @@ class QueenAnt(ThrowerAnt):
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        super().action(gamestate)
+        pos = self.place.exit
+        while pos:
+            if pos.ant is not None:
+                if not pos.ant.is_doubled:
+                    pos.ant.is_doubled = True
+                    pos.ant.buff()
+                if pos.ant.is_container and pos.ant.ant_contained is not None:
+                    # the pos.ant.ant_contained may change
+                    if not pos.ant.ant_contained.is_doubled:
+                        pos.ant.ant_contained.buff()
+                        pos.ant.ant_contained.is_doubled = True
+            pos = pos.exit
         # END Problem 12
 
     def reduce_health(self, amount):
@@ -418,7 +478,12 @@ class QueenAnt(ThrowerAnt):
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        if self.health <= amount:
+            ants_lose()
         # END Problem 12
+    def remove_from(self, place):
+        None
+
 
 
 ################
