@@ -262,6 +262,19 @@ class FireAnt(Ant):
         """
         # BEGIN Problem 5
         "*** YOUR CODE HERE ***"
+        reflective_damage = amount
+
+        # 在减少 FireAnt 的生命值之前，对蜜蜂造成反射伤害
+        for bee in list(self.place.bees):  # 使用列表副本避免修改时出错
+            bee.reduce_health(reflective_damage)
+
+        # 调用父类方法减少 FireAnt 的生命值
+        super().reduce_health(amount)
+
+        # 如果 FireAnt 死亡，增加额外伤害
+        if self.health <= 0:
+            for bee in list(self.place.bees):  # 再次遍历蜜蜂
+                bee.reduce_health(self.damage)
         # END Problem 5
 
 # BEGIN Problem 6
