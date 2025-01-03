@@ -2,3 +2,4 @@
 *.ok_history
 *.dir
 *.dat
+*.pyc
