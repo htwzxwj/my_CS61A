@@ -210,7 +210,7 @@ class Coin:
 
     def worth(self):
         "*** YOUR CODE HERE ***"
-        return self.cents + max(0, self.year - 50)
+        return self.cents + max(0, Mint.present_year - self.year - 50)
 
 class Nickel(Coin):
     cents = 5
