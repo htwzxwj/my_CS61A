@@ -18,4 +18,8 @@
                     (interleave (cdr lst1) (cdr lst2)))))
 )
 
-(define (no-repeats s) 'YOUR-CODE-HERE)
+(define (no-repeats s)
+  (if (null? s) s
+    (cons (car s)
+      (no-repeats (filter (lambda (x) (not (= (car s) x))) (cdr s)))))
+)
