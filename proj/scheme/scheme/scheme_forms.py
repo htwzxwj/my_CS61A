@@ -217,7 +217,7 @@ def make_let_frame(bindings, env):
 
     names = nil
     vals = nil
-
+    seen_symbols = set()
     # Iterate through the bindings to construct names and vals
     while bindings is not nil:
         binding = bindings.first
@@ -225,6 +225,9 @@ def make_let_frame(bindings, env):
         symbol = binding.first
         if not scheme_symbolp(symbol):
             raise SchemeError(f"Invalid symbol: {symbol}")
+        if symbol in seen_symbols:  # Check for duplicate symbols
+            raise SchemeError(f"Duplicate symbol in let bindings: {symbol}")
+        seen_symbols.add(symbol)
         value = scheme_eval(binding.rest.first, env)  # Evaluate the value expression
         names = Pair(symbol, names)  # Add symbol to the names list
         vals = Pair(value, vals)  # Add evaluated value to the vals list
@@ -232,7 +235,6 @@ def make_let_frame(bindings, env):
 
     # Return a new child frame with the bindings
     return env.make_child_frame(names, vals)
-    # END PROBLEM 14
 
 
 
