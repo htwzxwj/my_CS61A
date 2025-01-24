@@ -12,11 +12,15 @@
      `(* ,base ,(pow-expr base (- exp 1))))))  ; 利用 x^(2y+1) = x * (x^y)^2
 
 
+; 定义 repeat 宏
 (define-macro (repeat n expr)
-  `(repeated-call ,n ___))
+  `(repeated-call ,n (lambda () ,expr)))  ; 使用 repeated-call 执行 expr
 
-; Call zero-argument procedure f n times and return the final result.
+; 定义 repeated-call 函数
 (define (repeated-call n f)
-  (if (= n 1)
-      ___
-      (begin ___ ___)))
+  (if (= n 1)  ; 如果 n 是 1，直接调用 f 并返回结果
+      (f)
+      (begin
+        (f)  ; 调用 f
+        (repeated-call (- n 1) f))))  ; 递归调用 repeated-call，n 减 1
+
