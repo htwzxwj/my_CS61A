@@ -207,18 +207,30 @@ def make_let_frame(bindings, env):
     names = vals = nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
+def make_let_frame(bindings, env):
+    """Create a child frame of Frame ENV that contains the definitions given in
+    BINDINGS. The Scheme list BINDINGS must have the form of a proper bindings
+    list in a let expression: each item must be a list containing a symbol
+    and a Scheme expression."""
+    if not scheme_listp(bindings):
+        raise SchemeError('bad bindings list in let form')
+
+    names = nil
+    vals = nil
+
+    # Iterate through the bindings to construct names and vals
     for binding in bindings:
-        validate_form(binding, 2, 2)  # Ensure each binding is a list with 2 elements
+        validate_form(binding, 2, 2)  # Ensure binding has exactly two elements
         symbol = binding.first
         if not scheme_symbolp(symbol):
             raise SchemeError(f"Invalid symbol: {symbol}")
-        value = scheme_eval(binding.rest.first, env)
-        names = Pair(symbol, names)
-        vals = Pair(value, vals)
-    names = reverse(names)  # Reverse to maintain the original order
-    vals = reverse(vals)
-    # END PROBLEM 14
+        value = scheme_eval(binding.rest.first, env)  # Evaluate the value expression
+        names = Pair(symbol, names)  # Add symbol to the names list
+        vals = Pair(value, vals)  # Add evaluated value to the vals list
+
+    # Return a new child frame with the bindings
     return env.make_child_frame(names, vals)
+    # END PROBLEM 14
 
 
 
