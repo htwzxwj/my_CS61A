@@ -207,7 +207,16 @@ def make_let_frame(bindings, env):
     names = vals = nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
-    
+    for binding in bindings:
+        validate_form(binding, 2, 2)  # Ensure each binding is a list with 2 elements
+        symbol = binding.first
+        if not scheme_symbolp(symbol):
+            raise SchemeError(f"Invalid symbol: {symbol}")
+        value = scheme_eval(binding.rest.first, env)
+        names = Pair(symbol, names)
+        vals = Pair(value, vals)
+    names = reverse(names)  # Reverse to maintain the original order
+    vals = reverse(vals)
     # END PROBLEM 14
     return env.make_child_frame(names, vals)
 
