@@ -44,21 +44,65 @@ CREATE TABLE by_parent_height AS
 
 
 
--- The size of each dog
+-- 创建 size_of_dogs 表
 CREATE TABLE size_of_dogs AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT 
+    dogs.name AS name,      -- 狗的名字
+    sizes.size AS size      -- 狗的大小分类
+  FROM 
+    dogs
+  JOIN 
+    sizes
+  ON 
+    dogs.height > sizes.min AND dogs.height <= sizes.max;  -- 根据高度分类
 
 
--- [Optional] Filling out this helper table is recommended
+-- 创建 siblings 表，包含兄弟姐妹对
 CREATE TABLE siblings AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT 
+    p1.child AS sibling1,      -- 第一个兄弟姐妹的名字
+    p2.child AS sibling2,      -- 第二个兄弟姐妹的名字
+    sizes1.size AS size        -- 兄弟姐妹的大小
+  FROM 
+    parents p1                 -- 父母-子女关系表
+  JOIN 
+    parents p2
+  ON 
+    p1.parent = p2.parent      -- 兄弟姐妹有相同的父母
+  JOIN 
+    size_of_dogs AS sizes1
+  ON 
+    p1.child = sizes1.name     -- 第一个兄弟姐妹的大小
+  JOIN 
+    size_of_dogs AS sizes2
+  ON 
+    p2.child = sizes2.name     -- 第二个兄弟姐妹的大小
+  WHERE 
+    p1.child < p2.child        -- 确保兄弟姐妹对只出现一次（按字母排序）
+    AND sizes1.size = sizes2.size; -- 兄弟姐妹的大小相同
 
--- Sentences about siblings that are the same size
+
+
+-- 示例主查询
 CREATE TABLE sentences AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT 
+    "The two siblings, " || sibling1 || " and " || sibling2 || ", have the same size: " || size AS sentence
+  FROM 
+    siblings;
 
 
--- Height range for each fur type where all of the heights differ by no more than 30% from the average height
+
+
+-- 创建 low_variance 表
 CREATE TABLE low_variance AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT 
+    fur,                                        -- 毛皮类型
+    MAX(height) - MIN(height) AS height_range  -- 身高范围（最大减最小）
+  FROM 
+    dogs
+  GROUP BY 
+    fur                                        -- 按毛皮类型分组
+  HAVING 
+    MIN(height) >= AVG(height) * 0.7           -- 确保没有狗的身高小于平均身高的 70%
+    AND MAX(height) <= AVG(height) * 1.3;      -- 确保没有狗的身高大于平均身高的 130%
 
