@@ -37,11 +37,21 @@ def do_define_form(expressions, env):
         validate_form(expressions, 2, 2) # Checks that expressions is a list of length exactly 2
         # BEGIN PROBLEM 4
         "*** YOUR CODE HERE ***"
+        value = scheme_eval(expressions.rest.first, env)
+        env.define(signature, value)
+        return signature
         # END PROBLEM 4
     elif isinstance(signature, Pair) and scheme_symbolp(signature.first):
         # defining a named procedure e.g. (define (f x y) (+ x y))
         # BEGIN PROBLEM 10
         "*** YOUR CODE HERE ***"
+        procedure_name = signature.first
+        formals = signature.rest
+        body = expressions.rest
+        validate_formals(formals)
+        lambda_proc = LambdaProcedure(formals, body, env)
+        env.define(procedure_name, lambda_proc)
+        return procedure_name
         # END PROBLEM 10
     else:
         bad_signature = signature.first if isinstance(signature, Pair) else signature
@@ -57,6 +67,7 @@ def do_quote_form(expressions, env):
     validate_form(expressions, 1, 1)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    return expressions.first
     # END PROBLEM 5
 
 def do_begin_form(expressions, env):
@@ -83,6 +94,8 @@ def do_lambda_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    body = expressions.rest
+    return LambdaProcedure(formals, body, env)
     # END PROBLEM 7
 
 def do_if_form(expressions, env):
@@ -116,6 +129,13 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    result = True  # Start with a default True value
+    while expressions is not nil:
+        result = scheme_eval(expressions.first, env)  # Evaluate the current expression
+        if is_scheme_false(result):  # Use scheme_truep to check for Scheme truthiness
+            return False
+        expressions = expressions.rest  # Move to the next expression
+    return result  # Return the last evaluated value if all are True
     # END PROBLEM 12
 
 def do_or_form(expressions, env):
@@ -134,6 +154,12 @@ def do_or_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    while expressions is not nil:
+        result = scheme_eval(expressions.first, env)  # Evaluate the current expression
+        if is_scheme_true(result):  # Use is_scheme_true to check for Scheme truthiness
+            return result  # Return the first true value
+        expressions = expressions.rest  # Move to the next expression
+    return False  # Return False if all expressions are false
     # END PROBLEM 12
 
 def do_cond_form(expressions, env):
@@ -154,6 +180,9 @@ def do_cond_form(expressions, env):
         if is_scheme_true(test):
             # BEGIN PROBLEM 13
             "*** YOUR CODE HERE ***"
+            if clause.rest is nil:
+                return test
+            return eval_all(clause.rest, env)
             # END PROBLEM 13
         expressions = expressions.rest
 
@@ -178,6 +207,7 @@ def make_let_frame(bindings, env):
     names = vals = nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
+    
     # END PROBLEM 14
     return env.make_child_frame(names, vals)
 
