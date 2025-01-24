@@ -219,7 +219,8 @@ def make_let_frame(bindings, env):
     vals = nil
 
     # Iterate through the bindings to construct names and vals
-    for binding in bindings:
+    while bindings is not nil:
+        binding = bindings.first
         validate_form(binding, 2, 2)  # Ensure binding has exactly two elements
         symbol = binding.first
         if not scheme_symbolp(symbol):
@@ -227,6 +228,7 @@ def make_let_frame(bindings, env):
         value = scheme_eval(binding.rest.first, env)  # Evaluate the value expression
         names = Pair(symbol, names)  # Add symbol to the names list
         vals = Pair(value, vals)  # Add evaluated value to the vals list
+        bindings = bindings.rest  # Move to the next binding
 
     # Return a new child frame with the bindings
     return env.make_child_frame(names, vals)
